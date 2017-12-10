@@ -3,23 +3,29 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdint.h>
 
-int main(){
-    int fd, read_result;
+int main() {
+    int fd;
     char buffer[512];
+    char line[] = "I come from a land down under";
 
-    mkfifo("test_file", 0666);
+    mkfifo("pipe", 0666);
 
-    fd = open("test_file", O_WRONLY);
+    fd = open("pipe", O_WRONLY);
 
-    if(fd < 0){
+    if(fd < 0) {
         perror("Error opening file\n");
         return 0;
     }
 
-    while((read_result = read(STDIN_FILENO, buffer, 512)) > 0) {
-        write(fd, buffer, strlen(buffer));
+    while(1) {
+        write(fd, line, strlen(line));
+        write(fd, "\n", strlen("\n"));
+        sleep(5);
     }
 
     close(fd);
+
+    return 0;
 }
