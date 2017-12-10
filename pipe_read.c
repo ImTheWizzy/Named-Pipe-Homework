@@ -1,21 +1,32 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdint.h>
+#include <string.h>
 
-int main(){
-    int fd, read_result;
+int main() {
+    int fd, read_result = 1;
     char buffer[512];
 
-    fd = open("test_file", O_RDONLY);
+    fd = open("pipe", O_RDONLY);
 
-    if(fd < 0){
+    if(fd < 0) {
         perror("Error opening file\n");
         return 0;
     }
 
-    while((read_result = read(fd, buffer, 512)) > 0) {
-        write(STDOUT_FILENO, buffer, read_result);
+    while(1) {
+        read(fd, buffer, 512);
+        
+        if(read_result < 0) {
+            perror("Error reading\n");
+            return 0;
+        }
+
+        write(STDOUT_FILENO, buffer, strlen(buffer));
     }
 
     close(fd);
+
+    return 0;
 }
